@@ -4,5 +4,5 @@ CREATE TABLE "feedbacks" (
     "type" TEXT NOT NULL,
     "comment" TEXT NOT NULL,
     "screenshot" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
