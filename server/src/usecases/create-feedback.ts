@@ -42,6 +42,9 @@ export class CreateFeedbackUseCase {
           '<h1 style="font-size: 24px; color: #8257e6">Feedget</h1>',
           `<p>Tipo do feedback: ${feedback.type}</p>`,
           `<p>Comentário: ${feedback.comment}</p>`,
+          feedback.screenshot
+            ? `<img style="min-width: 340px;max-width: 720px;" src="${feedback.screenshot}" />`
+            : '',
           '</div>',
         ].join('\n'),
       });

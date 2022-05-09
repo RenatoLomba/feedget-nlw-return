@@ -1,34 +1,44 @@
 import { ArrowLeft } from 'phosphor-react';
 import { FC, FormEvent, useState } from 'react';
 
+import { api } from '../../../lib/api';
+import { FeedbackKey, feedbackTypes } from '../../../utils/feedbackTypes';
+import { Loading } from '../../Loading';
 import { WidgetCloseButton } from '../CloseButton';
 import { ScreenshotButton } from '../ScreenshotButton';
 
-import { FeedbackKey, feedbackTypes } from '../../../utils/feedbackTypes';
-
-interface FeedbackContentStepProps {
+interface IFeedbackContentStepProps {
   feedbackType: FeedbackKey;
   onFeedbackReturnClick: () => void;
   onFeedbackSent?: () => void;
 }
 
-export const FeedbackContentStep: FC<FeedbackContentStepProps> = ({
+export const FeedbackContentStep: FC<IFeedbackContentStepProps> = ({
   feedbackType,
   onFeedbackReturnClick,
   onFeedbackSent,
 }) => {
   const [comment, setComment] = useState('');
   const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [isSendingFeedback, setIsSendingFeedback] = useState(false);
 
   const feedbackTypeInfo = feedbackTypes[feedbackType];
   const canSendFeedback = !!comment.trim();
 
-  function handleSubmitFeedback(e: FormEvent) {
+  async function handleSubmitFeedback(e: FormEvent) {
     e.preventDefault();
 
-    if (!canSendFeedback) return;
+    if (!canSendFeedback || isSendingFeedback) return;
 
-    console.log({ screenshot, comment, type: feedbackType });
+    setIsSendingFeedback(true);
+
+    await api.post('/feedbacks', {
+      type: feedbackType,
+      comment: comment.trim(),
+      screenshot,
+    });
+
+    setIsSendingFeedback(false);
 
     onFeedbackSent?.();
   }
@@ -82,7 +92,7 @@ export const FeedbackContentStep: FC<FeedbackContentStepProps> = ({
 
           <button
             type="submit"
-            disabled={!canSendFeedback}
+            disabled={!canSendFeedback || isSendingFeedback}
             className="
             hover:bg-brand-300 focus:outline-none focus:ring-2
             bg-brand-500 p-2 rounded-md border-transparent flex
@@ -91,7 +101,7 @@ export const FeedbackContentStep: FC<FeedbackContentStepProps> = ({
             disabled:hover:bg-brand-500 disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
-            Enviar feedback
+            {isSendingFeedback ? <Loading /> : 'Enviar feedback'}
           </button>
         </footer>
       </form>
