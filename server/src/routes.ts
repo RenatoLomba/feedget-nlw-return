@@ -13,6 +13,10 @@ interface ICreateFeedbackBody {
   screenshot?: string;
 }
 
+router.get('/', (req, res) => {
+  return res.send('Hello world');
+});
+
 router.post('/feedbacks', async (req, res) => {
   const { type, comment, screenshot } = req.body as ICreateFeedbackBody;
 
